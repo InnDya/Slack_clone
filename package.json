@@ -1,0 +1,16 @@
+{
+  "name": "slack_klon",
+  "version": "1.0.0",
+  "description": "individual project on course Backend 1 JavaScript",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Inna Dyachkova",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "path": "^0.12.7",
+    "socket.io": "^4.0.0"
+  }
+}
