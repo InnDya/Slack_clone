@@ -20,7 +20,6 @@ app.use(expressEjsLayout);
 
 app.use(express.urlencoded({ extended: true }));
 
-
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
 app.get('/', (request, response) => {
