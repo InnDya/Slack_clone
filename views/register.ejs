@@ -1,6 +1,6 @@
-<main class="form-signin">
-    <form action="users/register" method="post">
-        <h1 class="h3 mb-3 fw-normal">Please register</h1>
+<form action="/register" method="post">
+    <h1 class="h3 mb-3 fw-normal">Please register</h1>
+    <%- include('partials/messages') %>
 
         <label for="inputName" class="visually-hidden">Name</label>
         <input type="text" id="inputName" class="form-control" name="name" placeholder="Name"
@@ -12,10 +12,8 @@
 
 
         <label for="inputPassword" class="visually-hidden">Password</label>
-        <input type="password" id="inputPassword" class="form-control" name="password" placeholder="Password"
-            value="Password" required>
+        <input type="password" id="inputPassword" class="form-control" name="password" placeholder="Password" required>
 
         <button class="w-100 btn btn-lg btn-secondary" type="submit">Register</button>
         <p><a href="/login">Login</a></p>
-    </form>
-</main>
+</form>
