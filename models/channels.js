@@ -5,11 +5,10 @@ const ChannelSchema = new mongoose.Schema({
         required: true
     },
     messages: {
-        type: Array,
-        required: true
+        type: Array
     }
 });
 
-const Channels = mongoose.model('Channel', ChannelSchema);
+const Channel = mongoose.model('Channel', ChannelSchema);
 
-module.exports = Channels;
+module.exports = Channel;

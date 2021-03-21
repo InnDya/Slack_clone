@@ -6,6 +6,7 @@ const path = require('path');
 // const router = express.Router();
 const mongoose = require('mongoose');
 const expressEjsLayout = require('express-ejs-layouts');
+const bodyParser = require('body-parser');
 const flash = require('connect-flash');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
@@ -17,13 +18,14 @@ mongoose.connect('mongodb://localhost:27017/slack')
     .catch(error => console.log(error));
 
 // const Users = require('./models/users');
-const Channels = require('./models/channels');
+const Channel = require('./models/channels');
 
 // EJS
 app.set('view engine', 'ejs');
 app.use(expressEjsLayout);
 
 app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
@@ -60,6 +62,19 @@ app.get('/', ensureAuthenticated, (request, response) => {
     response.sendFile(__dirname + '/html/index.html');
 });
 
+app.post('/channels', ensureAuthenticated, (request, response) => {
+    const name = request.body.channel;
+    const newChannel = new Channel({ name });
+    newChannel.save((error) => {
+        if (error) {
+            console.log(error);
+            response.sendStatus(500).end();
+        } else {
+            response.sendStatus(200).end();
+        }
+    });
+});
+
 // Routes
 app.use('/', require('./routes/auth'));
 
@@ -81,7 +96,7 @@ io.on('connection', (socket) => {
         // console.log(socket.request.user.email);
         console.log(message.channel + ' [' + socket.request.user.name + ']: ' + message.message);
         io.emit('chat message', message);
-        Channels.findOne({ name: message.channel })
+        Channel.findOne({ name: message.channel })
             .exec((error, channel) => {
                 if (error) {
                     console.log(error);
