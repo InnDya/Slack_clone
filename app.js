@@ -75,6 +75,29 @@ app.post('/channels', ensureAuthenticated, (request, response) => {
     });
 });
 
+app.get('/channels', ensureAuthenticated, (request, response) => {
+    Channel
+        .find()
+        .exec((error, channels) => {
+            if (error) {
+                console.log(error);
+            }
+            response.send(channels);
+        });
+});
+
+app.get('/channels/:id', (request, response) => {
+    const id = request.params.id;
+    Channel
+        .findOne({_id: id})
+        .exec((error, channel) => {
+            if (error) {
+                console.log(error); 
+            }
+            response.send(channel.messages);
+        })
+})
+
 // Routes
 app.use('/', require('./routes/auth'));
 
@@ -94,14 +117,15 @@ io.on('connection', (socket) => {
     socket.on('chat message', message => {
         // console.log(socket.request.user.name);
         // console.log(socket.request.user.email);
+        const msg = {message: message.message, user: socket.request.user.name, timestamp: Date.now()};
         console.log(message.channel + ' [' + socket.request.user.name + ']: ' + message.message);
-        io.emit('chat message', message);
+        io.emit('chat message', msg);
         Channel.findOne({ name: message.channel })
             .exec((error, channel) => {
                 if (error) {
                     console.log(error);
                 } else {
-                    channel.messages.push(message.message);
+                    channel.messages.push(msg);
                     channel.save();
                 }
             })

@@ -11,15 +11,18 @@ document.addEventListener('DOMContentLoaded', e => {
                 },
                 body: JSON.stringify({ channel: channel })
             })
-                .then(response => { 
-                    let link = document.createElement('a');
-                    link.className = 'nav-link';
-                    link.innerText = channel;
-                    let li = document.getElementById('channels_list');
-                    li.appendChild(link);
-                    document.querySelector('ul#channels').appendChild(li);
+                .then(response => {
+                    let li = `
+                    <li>
+                        <a class="nav-link" href="#">
+                            ${channel}
+                        </a>
+                    </li>`
+
+                    document.getElementById('channels').innerHTML += li;
                     document.getElementById('channel').value = '';
                 })
-                .catch(error => console.log(error) );
+                .catch(error => console.log(error));
         });
+
 });
