@@ -3,7 +3,6 @@ const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const path = require('path');
-// const router = express.Router();
 const mongoose = require('mongoose');
 const expressEjsLayout = require('express-ejs-layouts');
 const bodyParser = require('body-parser');
@@ -17,7 +16,6 @@ mongoose.connect('mongodb://localhost:27017/slack')
     .then(() => console.log('connected to db'))
     .catch(error => console.log(error));
 
-// const Users = require('./models/users');
 const Channel = require('./models/channels');
 
 // EJS
@@ -30,12 +28,6 @@ app.use(bodyParser.json());
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Session
-// app.use(session({
-//     name: 'slack',
-//     secret: 'secret',
-//     resave: true,
-//     saveUninitialized: true
-// }));
 const sessionStore = MongoStore.create({ mongoUrl: 'mongodb://localhost:27017/slack' });
 const sessionMiddleware = session({
     name: 'slack',
@@ -113,20 +105,33 @@ io.use((socket, next) => {
 
 io.on('connection', (socket) => {
     console.log('a user connected');
+    Channel
+        .find()
+        .exec((error, channels) => {
+            if (error) {
+                console.log(error); 
+            }
+            for (let channel of channels) {
+                console.log('joining channel ' + channel._id);
+                socket.join(channel._id.toString());
+            }
+        })
 
     socket.on('chat message', message => {
         // console.log(socket.request.user.name);
         // console.log(socket.request.user.email);
-        const msg = {message: message.message, user: socket.request.user.name, timestamp: Date.now()};
-        console.log(message.channel + ' [' + socket.request.user.name + ']: ' + message.message);
-        io.emit('chat message', msg);
-        Channel.findOne({ name: message.channel })
+        message['user'] = socket.request.user.name;
+        console.log(message);
+        console.log(socket.rooms);
+        Channel.findById(message.channel)
             .exec((error, channel) => {
                 if (error) {
                     console.log(error);
                 } else {
-                    channel.messages.push(msg);
+                    channel.messages.push(message);
                     channel.save();
+                    console.log('emitting message to ' + message.channel);
+                    io.in(message.channel).emit('chat message', message);
                 }
             })
     });
