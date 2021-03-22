@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', e => {
             }
         });
     if (location.hash.length > 1) {
-        channel = location.hash.substring(1);
+        let channel = location.hash.substring(1);
         loadChannel(channel);
     }
 });
