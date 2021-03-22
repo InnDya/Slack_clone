@@ -11,17 +11,17 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const passport = require('passport');
 require('./config/passport')(passport);
-const multer  = require('multer')
+const multer = require('multer')
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, 'public/uploads/')
+        cb(null, 'public/uploads/')
     },
     filename: function (req, file, cb) {
-      cb(null, file.originalname)
+        cb(null, file.originalname)
     }
 });
-const upload = multer({storage: storage});
+const upload = multer({ storage: storage });
 
 mongoose.connect('mongodb://localhost:27017/slack')
     .then(() => console.log('connected to db'))
@@ -68,12 +68,12 @@ app.get('/', ensureAuthenticated, (request, response) => {
 app.post('/channels', ensureAuthenticated, (request, response) => {
     const name = request.body.channel;
     const newChannel = new Channel({ name });
-    newChannel.save((error) => {
+    newChannel.save((error, object) => {
         if (error) {
             console.log(error);
-            response.sendStatus(500).end();
+            response.sendStatus(500);
         } else {
-            response.sendStatus(200).end();
+            response.send(object);
         }
     });
 });
@@ -92,10 +92,10 @@ app.get('/channels', ensureAuthenticated, (request, response) => {
 app.get('/channels/:id', (request, response) => {
     const id = request.params.id;
     Channel
-        .findOne({_id: id})
+        .findOne({ _id: id })
         .exec((error, channel) => {
             if (error) {
-                console.log(error); 
+                console.log(error);
             }
             response.send(channel.messages);
         })
@@ -104,7 +104,7 @@ app.get('/channels/:id', (request, response) => {
 app.post('/upload', upload.single('file'), function (request, response) {
     console.log(request.file, response.body);
     response.sendStatus(200).end();
- });
+});
 
 // Routes
 app.use('/', require('./routes/auth'));
@@ -125,7 +125,7 @@ io.on('connection', (socket) => {
         .find()
         .exec((error, channels) => {
             if (error) {
-                console.log(error); 
+                console.log(error);
             }
             for (let channel of channels) {
                 console.log('joining channel ' + channel._id);
@@ -133,6 +133,10 @@ io.on('connection', (socket) => {
             }
         })
 
+    socket.on('join channel', channel => {
+        console.log("joining channel " + channel);
+        socket.join(channel);
+    });
     socket.on('chat message', message => {
         // console.log(socket.request.user.name);
         // console.log(socket.request.user.email);

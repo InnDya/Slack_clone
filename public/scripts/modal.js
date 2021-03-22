@@ -11,10 +11,11 @@ document.addEventListener('DOMContentLoaded', e => {
                 },
                 body: JSON.stringify({ channel: channel })
             })
-                .then(response => {
+                .then(response => response.json())
+                .then(newChannel => {
                     let li = `
                     <li>
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="#${newChannel._id}">
                             ${channel}
                         </a>
                     </li>`

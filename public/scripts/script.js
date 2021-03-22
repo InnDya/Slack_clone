@@ -4,9 +4,9 @@ document.getElementById('form').addEventListener('submit', e => {
     e.preventDefault();
 
     let input = document.getElementById('input');
-    if (input.value) {
+    let channel = location.hash.substring(1);
+    if (input.value && channel.length > 0) {
         // console.log('Sending message: ' + input.value);
-        channel = location.hash.substring(1);
         message = {
             channel: channel,
             message: input.value,
@@ -27,11 +27,11 @@ document.getElementById('form-upload').addEventListener('submit', e => {
         method: 'POST',
         body: data
     })
-    .then(response => {
-        const text = '<a href="/public/uploads/' + file.name + '" target=_blank>' + file.name + '</a>';
-        document.getElementById('input').value = text;
-    })
-    .catch(error => console.log(error));
+        .then(response => {
+            const text = '<a href="/public/uploads/' + file.name + '" target=_blank>' + file.name + '</a>';
+            document.getElementById('input').value = text;
+        })
+        .catch(error => console.log(error));
 });
 
 socket.on('chat message', message => {
@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', e => {
 window.addEventListener('hashchange', function () {
     channel = location.hash.substring(1);
     loadChannel(channel);
+    socket.emit('join channel', channel);
 }, false);
 
 function loadChannel(channel) {
