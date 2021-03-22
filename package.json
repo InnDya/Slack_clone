@@ -1,5 +1,5 @@
 {
-  "name": "slack_klon",
+  "name": "slack_clone",
   "version": "1.0.0",
   "description": "individual project on course Backend 1 JavaScript",
   "main": "app.js",
@@ -18,6 +18,7 @@
     "express-ejs-layouts": "^2.5.0",
     "express-session": "^1.17.1",
     "mongoose": "^5.12.0",
+    "multer": "^1.4.2",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "path": "^0.12.7",

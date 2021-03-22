@@ -1,11 +1,9 @@
 const socket = io();
 
-let form = document.getElementById('form');
-let input = document.getElementById('input');
-
-form.addEventListener('submit', e => {
+document.getElementById('form').addEventListener('submit', e => {
     e.preventDefault();
 
+    let input = document.getElementById('input');
     if (input.value) {
         // console.log('Sending message: ' + input.value);
         channel = location.hash.substring(1);
@@ -19,9 +17,28 @@ form.addEventListener('submit', e => {
     input.value = '';
 });
 
+document.getElementById('form-upload').addEventListener('submit', e => {
+    e.preventDefault();
+    const input = document.getElementById('fileinput');
+    const file = input.files[0];
+    const data = new FormData();
+    data.append('file', file);
+    fetch('/upload', {
+        method: 'POST',
+        body: data
+    })
+    .then(response => {
+        const text = '<a href="/public/uploads/' + file.name + '" target=_blank>' + file.name + '</a>';
+        document.getElementById('input').value = text;
+    })
+    .catch(error => console.log(error));
+});
+
 socket.on('chat message', message => {
-    console.log('got message: ' + message);
+    console.log('got message: ' + message.message);
     addMessage(message);
+    let messagesList = document.getElementById('messages');
+    messagesList.scrollIntoView(false);
 });
 
 document.addEventListener('DOMContentLoaded', e => {
@@ -46,7 +63,7 @@ document.addEventListener('DOMContentLoaded', e => {
     }
 });
 
-window.addEventListener('hashchange', function() {
+window.addEventListener('hashchange', function () {
     channel = location.hash.substring(1);
     loadChannel(channel);
 }, false);
@@ -55,11 +72,13 @@ function loadChannel(channel) {
     fetch('/channels/' + channel)
         .then(response => response.json())
         .then(messages => {
-            document.getElementById('messages').innerHTML = '';
+            let messagesList = document.getElementById('messages');
+            messagesList.innerHTML = '';
             for (let message of messages) {
                 addMessage(message);
             }
-        });    
+            messagesList.scrollIntoView(false);
+        });
 }
 
 function addMessage(message) {

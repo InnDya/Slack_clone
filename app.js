@@ -11,6 +11,17 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const passport = require('passport');
 require('./config/passport')(passport);
+const multer  = require('multer')
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'public/uploads/')
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.originalname)
+    }
+  });
+const upload = multer({storage: storage});
 
 mongoose.connect('mongodb://localhost:27017/slack')
     .then(() => console.log('connected to db'))
@@ -89,6 +100,11 @@ app.get('/channels/:id', (request, response) => {
             response.send(channel.messages);
         })
 })
+
+app.post('/upload', upload.single('file'), function (request, response) {
+    console.log(request.file, response.body);
+    response.sendStatus(200).end();
+ });
 
 // Routes
 app.use('/', require('./routes/auth'));
