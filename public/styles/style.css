@@ -77,6 +77,10 @@ form>button {
     font-size: .75rem;
     text-transform: uppercase;
 }
+
+.bi-person-square {
+    font-size: 2rem;
+}
   
 /* Navbar */
   

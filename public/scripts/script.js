@@ -42,6 +42,14 @@ socket.on('chat message', message => {
 });
 
 document.addEventListener('DOMContentLoaded', e => {
+    fetch('/user-info')
+        .then(response => response.json())
+        .then(userInfo => {
+            const p = `<p><b>${userInfo.user}</b></p>`
+            document.getElementById('user-info').innerHTML = p;
+        })
+        .catch(error => console.log(error));
+
     fetch('/channels')
         .then(response => response.json())
         .then(channels => {

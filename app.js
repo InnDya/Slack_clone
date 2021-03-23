@@ -65,6 +65,10 @@ app.get('/', ensureAuthenticated, (request, response) => {
     response.sendFile(__dirname + '/html/index.html');
 });
 
+app.get('/user-info', ensureAuthenticated, (request, response) => {
+    response.send({user: request.user.name});
+});
+
 app.post('/channels', ensureAuthenticated, (request, response) => {
     const name = request.body.channel;
     const newChannel = new Channel({ name });
