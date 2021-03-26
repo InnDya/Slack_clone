@@ -72,6 +72,10 @@ form>button {
 .sidebar .nav-link:hover {
     color: #007bff;
 }
+
+li.selected_channel {
+    background-color: rgba(0, 0, 0, 0.15);
+}
   
 .sidebar-heading {
     font-size: .75rem;

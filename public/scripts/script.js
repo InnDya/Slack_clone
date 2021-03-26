@@ -56,25 +56,28 @@ document.addEventListener('DOMContentLoaded', e => {
             let channel_list = document.getElementById('channels')
             for (let channel of channels) {
                 let li = `
-                        <li>
+                        <li id="channel_${channel._id}">
                             <a class="nav-link" href=#${channel._id}>
                                 ${channel.name}
                             </a>
                         </li>`
-
                 channel_list.innerHTML += li;
             }
+            if (location.hash.length > 1) {
+                window.dispatchEvent(new HashChangeEvent("hashchange"));
+            }
         });
-    if (location.hash.length > 1) {
-        let channel = location.hash.substring(1);
-        loadChannel(channel);
-    }
 });
 
 window.addEventListener('hashchange', function () {
     channel = location.hash.substring(1);
     loadChannel(channel);
     socket.emit('join channel', channel);
+    for (let li of document.getElementById('channels').childNodes) {
+        li.className = '';
+    }
+    let selectedChannel = document.getElementById('channel_' + channel);
+    selectedChannel.className = 'selected_channel';
 }, false);
 
 function loadChannel(channel) {
