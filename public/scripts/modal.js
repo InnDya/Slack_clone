@@ -1,3 +1,4 @@
+/* Added event listener when user use form (modal) to add new channel */
 document.addEventListener('DOMContentLoaded', e => {
     document
         .getElementById('submit_channel')

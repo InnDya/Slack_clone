@@ -13,6 +13,9 @@ const passport = require('passport');
 require('./config/passport')(passport);
 const multer = require('multer')
 
+const Channel = require('./models/channels');
+
+// Storage configuration (destination: path), (filename: to save original name)
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'public/uploads/')
@@ -27,7 +30,6 @@ mongoose.connect('mongodb://localhost:27017/slack')
     .then(() => console.log('connected to db'))
     .catch(error => console.log(error));
 
-const Channel = require('./models/channels');
 
 // EJS
 app.set('view engine', 'ejs');
@@ -65,10 +67,12 @@ app.get('/', ensureAuthenticated, (request, response) => {
     response.sendFile(__dirname + '/html/index.html');
 });
 
+// get name for logged in user
 app.get('/user-info', ensureAuthenticated, (request, response) => {
     response.send({user: request.user.name});
 });
 
+// adding new channel
 app.post('/channels', ensureAuthenticated, (request, response) => {
     const name = request.body.channel;
     const newChannel = new Channel({ name });
@@ -82,6 +86,7 @@ app.post('/channels', ensureAuthenticated, (request, response) => {
     });
 });
 
+// get channel list from db
 app.get('/channels', ensureAuthenticated, (request, response) => {
     Channel
         .find()
@@ -93,6 +98,7 @@ app.get('/channels', ensureAuthenticated, (request, response) => {
         });
 });
 
+// get messages for specific channel
 app.get('/channels/:id', (request, response) => {
     const id = request.params.id;
     Channel
@@ -105,6 +111,7 @@ app.get('/channels/:id', (request, response) => {
         })
 })
 
+// handle file uploads
 app.post('/upload', upload.single('file'), function (request, response) {
     console.log(request.file, response.body);
     response.sendStatus(200).end();
